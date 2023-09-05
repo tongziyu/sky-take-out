@@ -29,4 +29,7 @@ public interface EmployeeMapper {
 
     List<Employee> selectPage(EmployeePageQueryDTO employeePageQueryDTO);
 
+    Integer update(Employee employee);
+
+    Employee queryById(Long id);
 }

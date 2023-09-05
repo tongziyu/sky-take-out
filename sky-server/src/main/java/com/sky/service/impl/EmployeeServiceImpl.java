@@ -21,9 +21,11 @@ import com.sky.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.quartz.LocalDataSourceJobStore;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -133,5 +135,53 @@ public class EmployeeServiceImpl implements EmployeeService {
         log.info("分页查询->总记录条数:{} 数据:{}",pageResult.getTotal(),pageResult.getRecords());
 
         return Result.success(pageResult);
+    }
+
+    /**
+     * 启用停用员工状态
+     * @param status
+     * @param id
+     */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+        Employee employee = Employee.builder()
+                .id(id)
+                .status(status)
+                .build();
+
+        log.info("启用停用的员工信息:{}",employee );
+        Integer update = employeeMapper.update(employee);
+
+        log.info("修改的条数:{}",update);
+
+    }
+
+    @Override
+    public Result<Employee> getEmployeeById(Long id) {
+        Employee employee = employeeMapper.queryById(id);
+        employee.setPassword(PasswordConstant.HIDDEN_PASSWORD);
+        return Result.success(employee);
+    }
+
+    @Override
+    public Result updateEmployee(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+
+        BeanUtils.copyProperties(employeeDTO,employee);
+
+        employee.setUpdateTime(LocalDateTime.now());
+
+        employee.setUpdateUser(BaseContext.getCurrentId());
+
+        log.info("employee对象:{}",employee);
+
+        Integer update = employeeMapper.update(employee);
+
+        if (update > 0){
+            return Result.success();
+        }else{
+            return Result.error("修改失败");
+        }
+
     }
 }
