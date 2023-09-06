@@ -35,4 +35,10 @@ public interface DishMapper {
      * @return
      */
     List<DishVO> pageQuery(DishPageQueryDTO dishPageQueryDTO);
+
+
+
+    Dish selectById(Long id);
+
+    void deleteByIds(List<Long> ids);
 }

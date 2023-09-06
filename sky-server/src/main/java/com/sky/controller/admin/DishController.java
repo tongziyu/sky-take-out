@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.annotation.Target;
+import java.util.List;
 
 /**
  * @Description:
@@ -49,6 +50,19 @@ public class DishController {
         Result<PageResult> pageResultResult = dishService.pageQuery(dishPageQueryDTO);
 
         return pageResultResult;
+    }
+
+    @DeleteMapping
+    @ApiOperation("批量删除")
+    public Result deleteByIds(@RequestParam("ids") List<Long> ids){
+        log.info("需要删除的id:{}",ids);
+
+        dishService.deleteByIds(ids);
+
+
+
+
+        return Result.success();
     }
 
 }

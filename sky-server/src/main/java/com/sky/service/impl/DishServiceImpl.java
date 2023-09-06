@@ -3,16 +3,20 @@ package com.sky.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.sky.constant.MessageConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.FlavorsMapper;
+import com.sky.mapper.SetmealDishMapper;
 import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
+import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +38,9 @@ public class DishServiceImpl implements DishService {
 
     @Autowired
     private FlavorsMapper flavorsMapper;
+
+    @Autowired
+    private SetmealDishMapper setmealDishMapper;
 
     /**
      * 保存菜品和口味
@@ -92,5 +99,48 @@ public class DishServiceImpl implements DishService {
 
 
         return Result.success(pageResult);
+    }
+
+
+    @Override
+    @Transactional
+    public void deleteByIds(List<Long> ids) {
+
+        log.info("要删除的菜品 id: {}",ids);
+
+        // 判断菜品是否是起售状态,如果是,就不能删除
+        for (Long id: ids) {
+            Dish dish = dishMapper.selectById(id);
+
+
+            if (dish.getStatus() == 1){
+                throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
+            }
+        }
+
+
+
+        // 判断菜品是否在套餐内
+        List<Long> longs = setmealDishMapper.selectByDishIds(ids);
+
+        if (longs != null && longs.size() > 0){
+
+            throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
+
+        }
+
+
+        // 删除菜品
+        if (ids != null && ids.size() > 0){
+            dishMapper.deleteByIds(ids);
+
+        }
+
+        // 删除口味,不需要判断 直接删除
+        flavorsMapper.deleteByIds(ids);
+
+
+
+
     }
 }

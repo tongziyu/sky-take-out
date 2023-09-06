@@ -39,4 +39,20 @@
         </where>
     </select>
 
+    <select id="selectById" resultType="dish">
+        select * from dish where id = #{id}
+    </select>
+
+    <delete id="deleteByIds">
+        delete from
+            dish
+        where
+            id in
+                <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+
+
+    </delete>
+
 </mapper>
