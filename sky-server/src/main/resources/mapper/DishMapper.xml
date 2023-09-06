@@ -42,6 +42,26 @@
     <select id="selectById" resultType="dish">
         select * from dish where id = #{id}
     </select>
+    <select id="selectLikeNameCategoryStatus" resultType="com.sky.entity.Dish">
+        select
+            *
+        from
+            dish
+        <where>
+            <if test="name !=null">
+                name like concat("%",#{name},"%")
+            </if>
+            <if test="categoryId !=null">
+                and category_id = #{categoryId}
+            </if>
+            <if test="status !=null">
+                and status = #{status}
+            </if>
+
+        </where>
+
+
+    </select>
 
     <delete id="deleteByIds">
         delete from

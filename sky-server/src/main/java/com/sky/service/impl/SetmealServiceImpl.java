@@ -1,0 +1,72 @@
+package com.sky.service.impl;
+
+import com.sky.dto.DishDTO;
+import com.sky.dto.SetmealDTO;
+import com.sky.entity.DishFlavor;
+import com.sky.entity.Setmeal;
+import com.sky.entity.SetmealDish;
+import com.sky.mapper.FlavorsMapper;
+import com.sky.mapper.SetmealDishMapper;
+import com.sky.mapper.SetmealMapper;
+import com.sky.result.Result;
+import com.sky.service.SetmealService;
+import com.sky.vo.DishVO;
+import com.sky.vo.SetmealVO;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+/**
+ * @Description:
+ * @Author: Ian
+ * @Date: 2023/9/7 01:14
+ */
+@Service
+@Slf4j
+public class SetmealServiceImpl implements SetmealService {
+
+    @Autowired
+    private SetmealMapper setmealMapper;
+
+    @Autowired
+    private SetmealDishMapper setmealDishMapper;
+
+    @Autowired
+    private FlavorsMapper flavorsMapper;
+
+    /**
+     * 添加套餐的方法
+     * @param setmealDTO
+     */
+    @Override
+    @Transactional
+    public void addSetmeal(SetmealDTO setmealDTO) {
+
+        // 插入套餐,并且获得回显id
+        Setmeal setmeal = new Setmeal();
+
+        BeanUtils.copyProperties(setmealDTO,setmeal);
+
+        log.info("需要插入的套餐:{}",setmeal);
+
+        setmealMapper.insert(setmeal);
+
+
+
+        // 插入套餐份数
+        List<SetmealDish> setmealDishes = setmealDTO.getSetmealDishes();
+
+        // 将套餐id放入关系对象中
+        for (SetmealDish setmealDish : setmealDishes){
+            setmealDish.setSetmealId(setmeal.getId());
+        }
+
+        setmealDishMapper.insert(setmealDishes);
+
+
+    }
+}

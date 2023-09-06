@@ -1,6 +1,5 @@
 package com.sky.service.impl;
 
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sky.constant.MessageConstant;
@@ -10,7 +9,6 @@ import com.sky.dto.DishPageQueryDTO;
 import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
 import com.sky.entity.Setmeal;
-import com.sky.entity.SetmealDish;
 import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.DishMapper;
 import com.sky.mapper.FlavorsMapper;
@@ -20,18 +18,13 @@ import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
-import com.sky.vo.SalesTop10ReportVO;
-import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.yaml.snakeyaml.events.Event;
 
-import javax.imageio.metadata.IIOMetadataFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -161,12 +154,11 @@ public class DishServiceImpl implements DishService {
         DishVO dishVo = new DishVO();
         BeanUtils.copyProperties(dish,dishVo);
 
-        List<DishFlavor> dishFlavors = flavorsMapper.selectById(id);
+        List<DishFlavor> dishFlavors = flavorsMapper.selectByDishId(id);
 
         dishVo.setFlavors(dishFlavors);
 
         return dishVo;
-
     }
 
     @Override
@@ -197,7 +189,6 @@ public class DishServiceImpl implements DishService {
 
             dishFlavor.setDishId(dish.getId());
         }
-
 
         log.info("要添加的口味:{}",flavors);
 
@@ -235,12 +226,19 @@ public class DishServiceImpl implements DishService {
                 // 获取到关联的套餐id后,修改status
                 setmealMapper.update(setmeal);
             }
-
-
-
-
         }
-
-
     }
+
+    @Override
+    public List<Dish> selectByCategoryId(Long categoryId) {
+        // 后台使用动态sql
+        Dish dish = new Dish();
+        dish.setCategoryId(categoryId);
+
+
+        List<Dish> dishes = dishMapper.selectLikeNameCategoryStatus(dish);
+        return dishes;
+    }
+
+
 }

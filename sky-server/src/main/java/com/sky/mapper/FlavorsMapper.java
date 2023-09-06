@@ -29,7 +29,7 @@ public interface FlavorsMapper {
 
 
     @Select("select * from dish_flavor where dish_id = #{dishId}")
-    List<DishFlavor> selectById(Long dishId);
+    List<DishFlavor> selectByDishId(Long dishId);
 
     void deleteByDishId(Long id);
 }
