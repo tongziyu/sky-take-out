@@ -14,7 +14,7 @@
 
     </insert>
 
-    <delete id="deleteByIds">
+    <delete id="deleteByDishIds">
         delete from
             dish_flavor
         where
@@ -22,5 +22,12 @@
                 <foreach collection="ids" item="id" open="(" close=")" separator=",">
                     #{id}
                 </foreach>
+    </delete>
+
+    <delete id="deleteByDishId">
+        delete from
+            dish_flavor
+        where
+            dish_id = #{id}
     </delete>
 </mapper>

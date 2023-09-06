@@ -22,11 +22,14 @@ public interface FlavorsMapper {
      */
 
 
+
     void insertBatch(List<DishFlavor> flavors);
 
-    void deleteByIds(List<Long> ids);
+    void deleteByDishIds(List<Long> ids);
 
 
     @Select("select * from dish_flavor where dish_id = #{dishId}")
     List<DishFlavor> selectById(Long dishId);
+
+    void deleteByDishId(Long id);
 }

@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.annotation.Target;
 import java.util.List;
 
 /**
@@ -69,6 +68,23 @@ public class DishController {
 
         log.info("查询出来的菜品 {}",dishById);
         return Result.success(dishById);
+    }
+
+    @PutMapping
+    @ApiOperation("修改菜品")
+    public Result updateDishAndFlavor(@RequestBody DishDTO dishDTO){
+        log.info("修改菜品的数据:{}",dishDTO);
+        dishService.updateDishAndFlavor(dishDTO);
+
+        return Result.success();
+    }
+
+    @ApiOperation("菜品起售停售")
+    @PostMapping("/status/{status}")
+    public Result updateStatus(@PathVariable Integer status,
+                               @RequestParam("id") Long id){
+        dishService.updateStatus(id,status);
+        return Result.success();
     }
 
 
