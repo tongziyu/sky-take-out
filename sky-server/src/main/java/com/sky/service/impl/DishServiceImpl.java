@@ -101,7 +101,10 @@ public class DishServiceImpl implements DishService {
         return Result.success(pageResult);
     }
 
-
+    /**
+     * 批量删除
+     * @param ids
+     */
     @Override
     @Transactional
     public void deleteByIds(List<Long> ids) {
@@ -111,36 +114,39 @@ public class DishServiceImpl implements DishService {
         // 判断菜品是否是起售状态,如果是,就不能删除
         for (Long id: ids) {
             Dish dish = dishMapper.selectById(id);
-
-
             if (dish.getStatus() == 1){
                 throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
             }
         }
-
-
-
         // 判断菜品是否在套餐内
         List<Long> longs = setmealDishMapper.selectByDishIds(ids);
 
         if (longs != null && longs.size() > 0){
-
             throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
-
         }
-
-
         // 删除菜品
         if (ids != null && ids.size() > 0){
             dishMapper.deleteByIds(ids);
 
         }
-
         // 删除口味,不需要判断 直接删除
         flavorsMapper.deleteByIds(ids);
+    }
 
+    @Override
+    public DishVO getDishByIdWithFlavor(Long id) {
+        Dish dish = dishMapper.selectById(Long.valueOf(id));
 
+        log.info("通过id查询出来的dish:{}",dish);
 
+        DishVO dishVo = new DishVO();
+        BeanUtils.copyProperties(dish,dishVo);
+
+        List<DishFlavor> dishFlavors = flavorsMapper.selectById(id);
+
+        dishVo.setFlavors(dishFlavors);
+
+        return dishVo;
 
     }
 }
