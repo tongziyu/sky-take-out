@@ -17,4 +17,26 @@
 
     </insert>
 
+    <select id="pageQuery" resultType="com.sky.vo.DishVO">
+        SELECT
+            d.id, d.name, c.name as category_name, d.category_id, d.price, d.image, d.description, d.`status`, d.update_time
+        from
+            dish d
+        left join
+            category c
+        ON
+            d.category_id = c.id
+        <where>
+            <if test="name != null">
+                d.name like concat("%",#{name},"%")
+            </if>
+            <if test="status != null">
+                and d.`status` = #{status}
+            </if>
+            <if test="categoryId != null">
+                and d.category_id = #{categoryId}
+            </if>
+        </where>
+    </select>
+
 </mapper>
