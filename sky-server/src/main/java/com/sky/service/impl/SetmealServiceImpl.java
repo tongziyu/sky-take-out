@@ -3,6 +3,7 @@ package com.sky.service.impl;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sky.constant.MessageConstant;
+import com.sky.constant.StatusConstant;
 import com.sky.dto.DishDTO;
 import com.sky.dto.SetmealDTO;
 import com.sky.dto.SetmealPageQueryDTO;
@@ -11,6 +12,7 @@ import com.sky.entity.DishFlavor;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
 import com.sky.exception.DeletionNotAllowedException;
+import com.sky.mapper.DishMapper;
 import com.sky.mapper.FlavorsMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
@@ -46,6 +48,9 @@ public class SetmealServiceImpl implements SetmealService {
 
     @Autowired
     private FlavorsMapper flavorsMapper;
+
+    @Autowired
+    private DishMapper dishMapper;
 
     /**
      * 添加套餐的方法
@@ -212,5 +217,35 @@ public class SetmealServiceImpl implements SetmealService {
 
 
         return Result.success(setmealVO);
+    }
+
+    /**
+     * 修改套餐的状态
+     *  - 如果套餐内有菜品的状态是停售状态,则起售套餐是不能执行的
+     * @param status
+     * @param id
+     */
+    @Override
+    @Transactional
+    public void updateStatusById(Integer status, Long id) {
+
+        // 在修改套餐起售停售的时候,判断套餐内的菜品有没有停售,如果有停售,则无法开启 起售
+
+        if (status == StatusConstant.ENABLE){
+            // 通过套餐的id 查询出来dish 的id
+            List<Long> dishIds =  setmealDishMapper.selectDishIdsBySetmealId(id);
+
+            // 通过dish的id查询到status,如果是0则直接抛出异常 表示 有菜品是停售,套餐不能起售
+            for(Long dishId: dishIds){
+                Dish dish = dishMapper.selectById(dishId);
+                if (dish.getStatus() == StatusConstant.DISABLE){
+                    throw new DeletionNotAllowedException(MessageConstant.SETMEAL_ENABLE_FAILED);
+                }
+            }
+        }
+
+        // 修改套餐的起售停售
+        setmealMapper.updateStatusById(status,id);
+
     }
 }

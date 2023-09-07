@@ -76,6 +76,7 @@ public class SetmealController {
      * @return
      */
     @PutMapping
+    @ApiOperation("更新套餐")
     public Result updateSetmeal(@RequestBody SetmealDTO setmealDTO){
 
         setmealService.update(setmealDTO);
@@ -86,6 +87,7 @@ public class SetmealController {
 
 
     @GetMapping("/{id}")
+    @ApiOperation("通过id查询套餐")
     public Result<SetmealVO> getSetmealById(@PathVariable Long id){
 
         Result result = setmealService.getSetmealById(id);
@@ -93,6 +95,11 @@ public class SetmealController {
         return result;
     }
 
-
+    @PostMapping("/status/{status}")
+    @ApiOperation("套餐起售,停售")
+    public Result updateStatus(@PathVariable("status")Integer status,@RequestParam("id") Long id){
+        setmealService.updateStatusById(status,id);
+        return Result.success();
+    }
 
 }

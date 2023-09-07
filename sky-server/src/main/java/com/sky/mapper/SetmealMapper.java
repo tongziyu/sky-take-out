@@ -5,6 +5,7 @@ import com.sky.entity.Setmeal;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.SetmealVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -34,4 +35,6 @@ public interface SetmealMapper {
 
 
     void deleteBatch(List<Long> ids);
+
+    void updateStatusById(@Param("status") Integer status, @Param("id") Long id);
 }

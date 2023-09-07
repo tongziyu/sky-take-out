@@ -74,7 +74,14 @@
                 #{id}
             </foreach>
         </where>
-
-
     </delete>
+
+    <update id="updateStatusById">
+        update
+            setmeal
+        set
+            status = #{status}
+        where
+            id = #{id}
+    </update>
 </mapper>

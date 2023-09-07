@@ -45,5 +45,14 @@
             setmeal_id = #{id}
 
     </select>
+    <select id="selectDishIdsBySetmealId" resultType="java.lang.Long">
+        select
+            dish_id
+        from
+            setmeal_dish
+        WHERE
+            setmeal_id = #{setmealId}
+
+    </select>
 
 </mapper>
