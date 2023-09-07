@@ -12,9 +12,29 @@
                 (#{item.setmealId},#{item.dishId},#{item.name},#{item.price},#{item.copies})
             </foreach>
     </insert>
+    <delete id="deleteBatch">
+        delete from
+            setmeal_dish
+        <where>
+            setmeal_id in
+            <foreach collection="setmealIds" item="setmealId" separator="," open="(" close=")">
+                #{setmealId}
+            </foreach>
+        </where>
+    </delete>
 
-    <select id="selectByDishIds" resultType="java.lang.Long">
+    <select id="selectByDishIds" resultType="long">
+        select
+            id
+        from
+            setmeal_dish
+        <where>
+            dish_id in
+            <foreach collection="ids" item="id" close=")" open="(" separator=",">
+                #{id}
+            </foreach>
 
-
+        </where>
     </select>
+
 </mapper>

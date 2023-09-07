@@ -26,4 +26,6 @@ public class MessageConstant {
 
     public static final String ACCOUNT_ALREADY_EXISTS="已存在";
 
+    public static final String SELECT_IS_EMPTY_SETMEAL="请选中套餐后删除";
+
 }

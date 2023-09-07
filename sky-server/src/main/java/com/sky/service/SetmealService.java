@@ -7,6 +7,8 @@ import com.sky.result.Result;
 import com.sky.vo.DishVO;
 import com.sky.vo.SetmealVO;
 
+import java.util.List;
+
 public interface SetmealService {
     /**
      * 添加套餐的方法
@@ -16,4 +18,6 @@ public interface SetmealService {
 
 
     PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO);
+
+    void deleteByIds(List<Long> ids);
 }

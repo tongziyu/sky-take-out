@@ -53,13 +53,24 @@ public class SetmealController {
      */
     @GetMapping("/page")
     @ApiOperation("分页查询")
-    public Result<PageResult> page(SetmealPageQueryDTO setmealPageQueryDTO){
+    public Result<PageResult> page( SetmealPageQueryDTO setmealPageQueryDTO){
         log.info("分页模糊查询的数据:{}",setmealPageQueryDTO);
 
         PageResult pageResult = setmealService.pageQuery(setmealPageQueryDTO);
 
         return Result.success(pageResult);
-
     }
+
+    @DeleteMapping
+    @ApiOperation("批量删除套餐")
+    public Result deleteByIds(@RequestParam("ids")List<Long> ids){
+        setmealService.deleteByIds(ids);
+        log.info("批量删除套餐的id:{}",ids);
+
+        return Result.success();
+    }
+
+
+
 
 }

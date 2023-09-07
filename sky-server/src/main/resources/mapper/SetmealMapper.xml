@@ -5,7 +5,7 @@
 <mapper namespace="com.sky.mapper.SetmealMapper">
   <update id="update" parameterType="setmealDish">
     update
-    setmeal_dish
+        dish
       <set>
         <if test="categoryId != null">category_id = #{categoryId},</if>
         <if test="name != null">name = #{name},</if>
@@ -59,9 +59,19 @@
                 and s.status = #{status}
             </if>
         </where>
-
-
-
-
     </select>
+
+
+    <delete id="deleteBatch">
+        delete from
+            setmeal
+        <where>
+            id in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+        </where>
+
+
+    </delete>
 </mapper>

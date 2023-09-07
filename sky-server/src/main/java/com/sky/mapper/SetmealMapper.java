@@ -32,4 +32,6 @@ public interface SetmealMapper {
 
     List<SetmealVO> selectLikeCategoryIdNameStatus(Setmeal setmeal);
 
+
+    void deleteBatch(List<Long> ids);
 }

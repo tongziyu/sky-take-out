@@ -126,10 +126,14 @@ public class DishServiceImpl implements DishService {
             }
         }
         // 判断菜品是否在套餐内
-        List<Long> longs = setmealDishMapper.selectByDishIds(ids);
+        // select id from setmeal_dish where dish_id = #{ids}
+        List<Long> setmealIdByDishIds = setmealDishMapper.selectByDishIds(ids);
 
-        if (longs != null && longs.size() > 0){
-            throw new DeletionNotAllowedException(MessageConstant.DISH_ON_SALE);
+        log.info("菜品相关联的套餐:{}",ids);
+        log.info("longs.size = {}",setmealIdByDishIds.size());
+
+        if (setmealIdByDishIds != null && setmealIdByDishIds.size() > 0){
+            throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         }
         // 删除菜品
         if (ids != null && ids.size() > 0){
@@ -161,6 +165,10 @@ public class DishServiceImpl implements DishService {
         return dishVo;
     }
 
+    /**
+     * 修改菜品
+     * @param dishDTO
+     */
     @Override
     @Transactional
     public void updateDishAndFlavor(DishDTO dishDTO) {
