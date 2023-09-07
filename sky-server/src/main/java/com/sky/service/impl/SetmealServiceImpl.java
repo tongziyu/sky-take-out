@@ -1,13 +1,18 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.sky.dto.DishDTO;
 import com.sky.dto.SetmealDTO;
+import com.sky.dto.SetmealPageQueryDTO;
+import com.sky.entity.Dish;
 import com.sky.entity.DishFlavor;
 import com.sky.entity.Setmeal;
 import com.sky.entity.SetmealDish;
 import com.sky.mapper.FlavorsMapper;
 import com.sky.mapper.SetmealDishMapper;
 import com.sky.mapper.SetmealMapper;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.SetmealService;
 import com.sky.vo.DishVO;
@@ -51,6 +56,8 @@ public class SetmealServiceImpl implements SetmealService {
 
         BeanUtils.copyProperties(setmealDTO,setmeal);
 
+
+
         log.info("需要插入的套餐:{}",setmeal);
 
         setmealMapper.insert(setmeal);
@@ -65,8 +72,43 @@ public class SetmealServiceImpl implements SetmealService {
             setmealDish.setSetmealId(setmeal.getId());
         }
 
+        log.info("dish数据:{}", setmealDishes);
+
+        // 在关系表中保存 套餐和份数的关系
         setmealDishMapper.insert(setmealDishes);
 
+    }
 
+    /**
+     * 套餐分页查询
+     * @param setmealPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult pageQuery(SetmealPageQueryDTO setmealPageQueryDTO) {
+
+        Setmeal setmeal = new Setmeal();
+
+        // 开启分页查询
+        PageHelper.startPage(setmealPageQueryDTO.getPage(),setmealPageQueryDTO.getPageSize());
+
+        BeanUtils.copyProperties(setmealPageQueryDTO,setmeal);
+
+
+        log.info("模糊查询的数据:{}",setmeal);
+
+        List<SetmealVO> setmeals = setmealMapper.selectLikeCategoryIdNameStatus(setmeal);
+
+
+        PageInfo pageInfo = new PageInfo(setmeals);
+
+        log.info("模糊查询出来的数据:{}",pageInfo.getList());
+
+        PageResult pageResult = new PageResult();
+
+        pageResult.setRecords(pageInfo.getList());
+        pageResult.setTotal(pageInfo.getTotal());
+
+        return pageResult;
     }
 }
