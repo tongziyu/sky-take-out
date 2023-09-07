@@ -5,7 +5,7 @@
 <mapper namespace="com.sky.mapper.SetmealMapper">
   <update id="update" parameterType="setmealDish">
     update
-        dish
+        setmeal
       <set>
         <if test="categoryId != null">category_id = #{categoryId},</if>
         <if test="name != null">name = #{name},</if>
@@ -26,18 +26,21 @@
         setmeal(category_id,name,price,status,description,image,create_time,update_time,create_user,update_user)
     values
         (#{categoryId},#{name},#{price},#{status},#{description},#{image},#{createTime},#{updateTime},#{createUser},#{updateUser})
-
-
   </insert>
+
+
   <select id="selectById" resultType="setmeal">
         select
-            id, name,price,status,description,image,category_id,update_time
+            id, name,price,status,description,image,category_id,update_time,
+            update_user,create_user,create_time
         from
             setmeal
         where
             id = #{id}
 
   </select>
+
+
     <select id="selectLikeCategoryIdNameStatus" resultType="com.sky.vo.SetmealVO">
         select
             *,c.name as categoryName

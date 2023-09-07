@@ -70,6 +70,28 @@ public class SetmealController {
         return Result.success();
     }
 
+    /**
+     * 修改套餐
+     * @param setmealDTO
+     * @return
+     */
+    @PutMapping
+    public Result updateSetmeal(@RequestBody SetmealDTO setmealDTO){
+
+        setmealService.update(setmealDTO);
+
+
+        return Result.success();
+    }
+
+
+    @GetMapping("/{id}")
+    public Result<SetmealVO> getSetmealById(@PathVariable Long id){
+
+        Result result = setmealService.getSetmealById(id);
+
+        return result;
+    }
 
 
 
