@@ -26,8 +26,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.awt.event.FocusEvent;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -246,6 +244,5 @@ public class SetmealServiceImpl implements SetmealService {
 
         // 修改套餐的起售停售
         setmealMapper.updateStatusById(status,id);
-
     }
 }

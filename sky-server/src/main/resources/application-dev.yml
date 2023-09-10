@@ -11,3 +11,10 @@ sky:
     bucket-name: web-oss-test-project
     access-key-id: LTAI5tHwLSMvZ4FgmVcYBWp7
     access-key-secret: 4UOtXZXHvAaNxm9o78sRIbVT0p1fmX
+  redis:
+    password: 20001030
+    host: localhost
+    port: 6379
+  wechat:
+    appid: wx7f16110779d08254
+    secret: 8d2034758ea352a62a9e684ad327fdd1

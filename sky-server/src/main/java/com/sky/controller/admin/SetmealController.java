@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.lang.annotation.Target;
 import java.util.List;
 
 /**
@@ -24,7 +25,7 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@Api("套餐相关接口")
+@Api(tags = "套餐相关接口")
 @RequestMapping("/admin/setmeal")
 public class SetmealController {
     @Autowired
