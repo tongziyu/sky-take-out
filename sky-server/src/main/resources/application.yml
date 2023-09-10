@@ -53,7 +53,7 @@ sky:
     admin-token-name: token
     user-secret-key: itheima
     user-ttl: 720000000
-    user-token-name: authenticantion
+    user-token-name: authentication
 
 
   # 配置阿里云oss的信息

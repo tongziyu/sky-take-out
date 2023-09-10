@@ -28,7 +28,7 @@ public class ShopController {
     @ApiOperation("店铺状态查询")
     public Result getStatus(){
         Integer shopStatus1 = (Integer)redisTemplate.opsForValue().get("SHOP_STATUS");
-        log.info("当前店铺状态:{}",shopStatus1);
+        log.info("user端:当前店铺状态:{}",shopStatus1);
         return Result.success(shopStatus1);
     }
 

@@ -40,10 +40,12 @@ public class UserController {
         log.info("C端登录唯一码:{}",userLoginDTO.getCode());
 
         User user = userService.wxLogin(userLoginDTO);
+        log.info("登录查询的user:{}",user);
 
         Map claims = new HashMap();
 
         claims.put(JwtClaimsConstant.USER_ID,user.getId());
+
 
         String jwt = JwtUtil.createJWT(jwtProperties.getUserSecretKey(), jwtProperties.getUserTtl(), claims);
 

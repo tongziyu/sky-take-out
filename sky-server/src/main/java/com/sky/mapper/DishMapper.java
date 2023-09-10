@@ -47,7 +47,7 @@ public interface DishMapper {
 
 
     @Select("select * from dish where category_id = #{categoryId}")
-    List<Dish> selecByCategoryId(Long categoryId);
+    List<Dish> selectByCategoryId(Long categoryId);
 
     List<Dish> selectLikeNameCategoryStatus(Dish dish);
 }

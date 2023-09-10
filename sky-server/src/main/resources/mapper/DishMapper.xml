@@ -42,6 +42,8 @@
     <select id="selectById" resultType="dish">
         select * from dish where id = #{id}
     </select>
+
+
     <select id="selectLikeNameCategoryStatus" resultType="com.sky.entity.Dish">
         select
             *
