@@ -21,11 +21,13 @@ import com.sky.vo.DishVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @Description:
@@ -46,6 +48,9 @@ public class DishServiceImpl implements DishService {
 
     @Autowired
     private SetmealMapper setmealMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
 
 
@@ -77,6 +82,10 @@ public class DishServiceImpl implements DishService {
 
             flavorsMapper.insertBatch(flavors);
         }
+
+        // 删除redis中的缓存
+        String key = "dish_" + dishDTO.getCategoryId();
+        cleaCache(key);
 
 
     }
@@ -142,6 +151,9 @@ public class DishServiceImpl implements DishService {
         }
         // 删除口味,不需要判断 直接删除
         flavorsMapper.deleteByDishIds(ids);
+
+        // 清除redis缓存
+        cleaCache("dish_*");
     }
 
     /**
@@ -201,6 +213,9 @@ public class DishServiceImpl implements DishService {
         log.info("要添加的口味:{}",flavors);
 
         flavorsMapper.insertBatch(flavors);
+
+        // 清除redis缓存
+        cleaCache("dish_*");
     }
 
     /**
@@ -235,6 +250,9 @@ public class DishServiceImpl implements DishService {
                 setmealMapper.update(setmeal);
             }
         }
+
+        // 清除redis缓存
+        cleaCache("dish_*");
     }
 
     @Override
@@ -271,6 +289,19 @@ public class DishServiceImpl implements DishService {
         }
 
         return dishVOList;
+    }
+
+
+    /**
+     * 清除缓存数据
+     * @param pattern
+     */
+    private void cleaCache(String pattern){
+        Set keys = redisTemplate.keys(pattern);
+
+        redisTemplate.delete(keys);
+
+
     }
 
 }
