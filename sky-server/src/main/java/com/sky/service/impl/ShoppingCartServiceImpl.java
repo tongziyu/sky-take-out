@@ -119,4 +119,42 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         Long userId = BaseContext.getCurrentId();
         shoppingCartMapper.deleteAllByUserId(userId);
     }
+
+    /**
+     * 购物车商品-1
+     * @param shoppingCartDTO
+     */
+    @Override
+    public void sub(ShoppingCartDTO shoppingCartDTO) {
+        /*
+        思路: 通过dish_id 或者 setmeal_id 或者 flavor 来查询出来数据库的一条记录
+                - 判断那条数据的number如果是1 的话,直接删除这条记录
+                - 如果这条数据的number是>1,则修改这条记录的number = number - 1
+         */
+        ShoppingCart shoppingCart = new ShoppingCart();
+
+        BeanUtils.copyProperties(shoppingCartDTO,shoppingCart);
+
+        shoppingCart.setUserId(BaseContext.getCurrentId());
+
+        log.info("进行查询的shoppingCart:{}",shoppingCart);
+
+        List<ShoppingCart> list = shoppingCartMapper.list(shoppingCart);
+
+        ShoppingCart shoppingCart1 = list.get(0);
+
+        log.info("数据库里面查询出来的shoopingCart:{}",shoppingCart1);
+
+        // 如果这个菜品的数量等于1,则直接删除掉该条数据
+
+        if (shoppingCart1.getNumber()  == 1){
+            shoppingCartMapper.deleteOne(shoppingCart1);
+        }
+
+        // 如果菜品的数量大于1,则修改该条数据的number - 1
+        if (shoppingCart1.getNumber() > 1){
+            shoppingCartMapper.sub(shoppingCart1);
+        }
+
+    }
 }

@@ -28,4 +28,11 @@ public interface ShoppingCartService {
      */
     void delete();
 
+
+    /**
+     * 购物车商品-1
+     * @param shoppingCartDTO
+     */
+    void sub(ShoppingCartDTO shoppingCartDTO);
+
 }

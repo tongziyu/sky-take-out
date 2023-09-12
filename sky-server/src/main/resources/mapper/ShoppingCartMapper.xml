@@ -44,4 +44,15 @@
             (#{name},#{image},#{userId},#{dishId},#{setmealId},#{dishFlavor},#{number},#{amount},#{createTime})
 
     </insert>
+
+    <delete id="sub" parameterType="shoppingCart">
+        update
+            shopping_cart
+        set
+            number = number - 1
+        where
+            id = #{id}
+
+
+    </delete>
 </mapper>
