@@ -1,8 +1,13 @@
 package com.sky.mapper;
 
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
+import com.sky.vo.OrderVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 @Mapper
 public interface OrdersMapper {
@@ -25,4 +30,15 @@ public interface OrdersMapper {
      * @param orders
      */
     void update(Orders orders);
+
+    /**
+     * 根据userId查询历史订单,如果status不为空 则加上status条件
+     * @param userId
+     * @param status
+     * @return
+     */
+    List<Orders> selectHistoryOrder(@Param("userId") Long userId,
+                                    @Param("status") Integer status);
+
+
 }

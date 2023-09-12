@@ -46,4 +46,19 @@
         where id = #{id}
     </update>
 
+    <select id="selectHistoryOrder" resultType="orders">
+        select
+            *
+        from
+            orders
+        <where>
+            user_id = #{userId}
+            <if test="status != null">
+                and status = #{status}
+            </if>
+        </where>
+        order by
+            order_time desc
+    </select>
+
 </mapper>
