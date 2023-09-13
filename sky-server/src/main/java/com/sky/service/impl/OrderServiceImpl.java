@@ -15,6 +15,7 @@ import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
 import com.sky.vo.OrderPaymentVO;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import lombok.extern.slf4j.Slf4j;
@@ -411,5 +412,51 @@ public class OrderServiceImpl implements OrderService {
 
         // 将该订单对应的所有菜品信息拼接在一起
         return String.join("", orderDishList);
+    }
+
+    /**
+     * 查询状态,并统计
+     * @return
+     */
+    @Override
+    public OrderStatisticsVO getStatistics() {
+        OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
+        // 1. 第一种实现方式:通过查询所有的orders,然后循环订单,将对应的状态进行+1
+        /*List<Orders> orders = ordersMapper.selectAll();
+        Integer tobeConfirmed = 0;
+        Integer confirmed = 0;
+        Integer deliveryInProgress = 0;
+
+        for (Orders od : orders){
+            Integer status = od.getStatus();
+            if (status == Orders.TO_BE_CONFIRMED){
+                tobeConfirmed += 1;
+                orderStatisticsVO.setToBeConfirmed(tobeConfirmed);
+            }
+
+            if (status == Orders.CONFIRMED){
+                confirmed += 1;
+                orderStatisticsVO.setConfirmed(confirmed);
+            }
+
+            if (status == Orders.DELIVERY_IN_PROGRESS){
+                deliveryInProgress += 1;
+                orderStatisticsVO.setDeliveryInProgress(deliveryInProgress);
+            }
+        }*/
+        // 2. 第二种实现方式:通过sql语句的count方法查询
+
+
+        Integer beBeConfirmed = ordersMapper.selectCountByStatus(Orders.TO_BE_CONFIRMED);
+
+        Integer confirmed = ordersMapper.selectCountByStatus(Orders.CONFIRMED);
+
+        Integer deliveryInProgress = ordersMapper.selectCountByStatus(Orders.DELIVERY_IN_PROGRESS);
+
+        orderStatisticsVO.setToBeConfirmed(beBeConfirmed);
+        orderStatisticsVO.setConfirmed(confirmed);
+        orderStatisticsVO.setDeliveryInProgress(deliveryInProgress);
+
+        return orderStatisticsVO;
     }
 }

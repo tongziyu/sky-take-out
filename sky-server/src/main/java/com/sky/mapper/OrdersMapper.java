@@ -52,4 +52,10 @@ public interface OrdersMapper {
     Orders selectOrderById(Long id);
 
     List<Orders> selectAllDynamic(OrdersPageQueryDTO orders);
+
+    @Select("select * from orders")
+    List<Orders> selectAll();
+
+    @Select("select count(status) from orders where status = #{status}")
+    Integer selectCountByStatus(Integer status);
 }
