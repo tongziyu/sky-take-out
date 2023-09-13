@@ -50,4 +50,6 @@ public interface OrdersMapper {
 
     @Select("select * from orders where id = #{id}")
     Orders selectOrderById(Long id);
+
+    List<Orders> selectAllDynamic(OrdersPageQueryDTO orders);
 }

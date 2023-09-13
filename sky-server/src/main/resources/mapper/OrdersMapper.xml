@@ -79,4 +79,26 @@
             id = #{id}
     </update>
 
+    <select id="selectAllDynamic" resultType="orders">
+        select
+            *
+        from
+            orders
+        <where>
+            <if test="number != null">
+                number = #{number}
+            </if>
+            <if test="phone != null">
+                and phone = #{phone}
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="beginTime != null and endTime != null">
+                order_time between #{beginTime} and #{endTime}
+            </if>
+        </where>
+
+    </select>
+
 </mapper>

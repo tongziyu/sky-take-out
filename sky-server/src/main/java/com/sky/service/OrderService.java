@@ -38,4 +38,17 @@ public interface OrderService {
     OrderVO getOrderDetailByOrderId(Long id);
 
     void cancelById(Long id);
+
+    /**
+     * 再来一单
+     * @param id
+     */
+    void repetitionOrder(Long id);
+
+    /**
+     * 查询所有订单,分页查询,按条件查询
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO);
 }
