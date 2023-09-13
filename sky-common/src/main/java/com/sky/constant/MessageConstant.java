@@ -28,4 +28,7 @@ public class MessageConstant {
 
     public static final String SELECT_IS_EMPTY_SETMEAL="请选中套餐后删除";
 
+    public static final String ORDER_CONTACT_BUSINESS="请联系商家取消订单!";
+    public static final String ORDER_RETURN_MONEY="请联系商家退钱!";
+
 }

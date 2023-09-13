@@ -20,6 +20,7 @@ import com.sky.vo.OrderVO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -246,5 +247,62 @@ public class OrderServiceImpl implements OrderService {
         return pageResult;
     }
 
+    /**
+     * 通过order id查询 order详情
+     * @param id
+     * @return
+     */
+    @Override
+    public OrderVO getOrderDetailByOrderId(Long id) {
+        // 获得order数据
+        Orders order = ordersMapper.getOrderById(id);
 
+        // 获得orderDetail数据
+        List<OrderDetail> orderDetails = orderDetailMapper.selectListByOrderId(order.getId());
+
+        OrderVO orderVO = new OrderVO();
+
+        BeanUtils.copyProperties(order,orderVO);
+
+        orderVO.setOrderDetailList(orderDetails);
+
+
+        return orderVO;
+    }
+
+    /**
+     * 取消订单
+     * @param id
+     */
+    @Override
+    public void cancelById(Long id) {
+        // 待支付和待接单的状态下,用户可以直接取消订单
+        Orders orders1 = ordersMapper.selectOrderById(id);
+
+        if (orders1 == null){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+        Integer status = orders1.getStatus();
+
+        if(status == Orders.CONFIRMED || status == Orders.DELIVERY_IN_PROGRESS){
+            throw new OrderBusinessException(MessageConstant.ORDER_CONTACT_BUSINESS);
+        }
+
+
+
+        // 如果已付款,但是商家未接单 则需要退款
+        if (status == Orders.TO_BE_CONFIRMED){
+            // 退款!!!,无法实现!!
+
+        }
+
+        // 如果未付款,则直接取消订单
+        Orders orders = new Orders();
+        orders.setId(id);
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelTime(LocalDateTime.now());
+        orders.setCancelReason("用户取消");
+        ordersMapper.updateStatusCancelById(orders);
+    }
 }

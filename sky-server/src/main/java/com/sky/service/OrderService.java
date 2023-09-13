@@ -7,6 +7,7 @@ import com.sky.entity.Orders;
 import com.sky.result.PageResult;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 
 import java.util.List;
 
@@ -30,8 +31,11 @@ public interface OrderService {
 
     /**
      * 历史订单查询,分页查询
-     * @param ordersPageQueryDTO
      * @return
      */
     PageResult getHistoryOrdersPage(Integer page,Integer pageSize, Integer status);
+
+    OrderVO getOrderDetailByOrderId(Long id);
+
+    void cancelById(Long id);
 }

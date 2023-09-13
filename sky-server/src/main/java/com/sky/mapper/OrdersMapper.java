@@ -6,6 +6,7 @@ import com.sky.vo.OrderVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -41,4 +42,12 @@ public interface OrdersMapper {
                                     @Param("status") Integer status);
 
 
+    @Select("select * from orders where id = #{id}")
+    Orders getOrderById(Long id);
+
+
+    void updateStatusCancelById(Orders orders);
+
+    @Select("select * from orders where id = #{id}")
+    Orders selectOrderById(Long id);
 }
