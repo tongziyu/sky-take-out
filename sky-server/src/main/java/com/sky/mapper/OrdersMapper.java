@@ -2,6 +2,7 @@ package com.sky.mapper;
 
 import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
+import com.sky.dto.OrdersPaymentDTO;
 import com.sky.entity.Orders;
 import com.sky.vo.OrderVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -9,6 +10,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -67,4 +69,15 @@ public interface OrdersMapper {
 
     @Update("update orders set status = #{status} where id = #{id}")
     void updateStatusDelivery(Orders od);
+
+
+    @Select("select * from orders where status = #{status} and order_time < #{timeOut}")
+    List<Orders> selectTimeOutOrder(@Param("status") Integer status, @Param("timeOut") LocalDateTime timeOut);
+
+    /**
+     * 通过订单号 直接将订单状态改成 已付款
+     * @param ordersPaymentDTO
+     */
+    @Update("update orders set status = 2 where number = #{orderNumber}")
+    void updateStatusByNumberToBeConfirmed(OrdersPaymentDTO ordersPaymentDTO);
 }

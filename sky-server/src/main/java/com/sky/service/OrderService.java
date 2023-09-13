@@ -72,4 +72,8 @@ public interface OrderService {
     void updateStatusDelivery(Long id);
 
     void updateStatusComplete(Long id);
+    /**
+     * 通过订单号 直接将订单状态改成 已付款
+     */
+    void updateStatusByNumber(OrdersPaymentDTO ordersPaymentDTO);
 }

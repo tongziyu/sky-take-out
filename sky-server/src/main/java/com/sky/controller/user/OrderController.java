@@ -53,6 +53,14 @@ public class OrderController {
         log.info("订单支付：{}", ordersPaymentDTO);
         OrderPaymentVO orderPaymentVO = orderService.payment(ordersPaymentDTO);
         log.info("生成预支付交易单：{}", orderPaymentVO);
+
+
+        // 直接修订单的状态为已支付
+        orderService.updateStatusByNumber(ordersPaymentDTO);
+
+        //直接调用支付成功的回调方法,假设已经支付成功了
+        orderService.paySuccess(ordersPaymentDTO.getOrderNumber());
+
         return Result.success(orderPaymentVO);
     }
 

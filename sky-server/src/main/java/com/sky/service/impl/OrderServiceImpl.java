@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -16,6 +17,7 @@ import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
+import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
 import org.ini4j.spi.BeanTool;
 import org.springframework.beans.BeanUtils;
@@ -30,6 +32,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -56,6 +59,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private WebSocketServer webSocketServer;
 
 
     /**
@@ -198,16 +204,30 @@ public class OrderServiceImpl implements OrderService {
         Orders ordersDB = ordersMapper.getByNumber(outTradeNo);
 
         // 根据订单id更新订单的状态、支付方式、支付状态、结账时间
-        Orders orders = Orders.builder()
-                .id(ordersDB.getId())
-                .status(Orders.TO_BE_CONFIRMED)
-                .payStatus(Orders.PAID)
-                .checkoutTime(LocalDateTime.now())
-                .build();
-        ordersMapper.update(orders);
+        //Orders orders = Orders.builder()
+        //        .id(ordersDB.getId())
+        //        .status(Orders.TO_BE_CONFIRMED)
+        //        .payStatus(Orders.PAID)
+        //        .checkoutTime(LocalDateTime.now())
+        //        .build();
+        //
+        //ordersMapper.update(orders);
+
+
+        Map map = new HashMap();
+        map.put("type",1);
+        map.put("orderId",ordersDB.getId());
+        map.put("content","订单号:" + outTradeNo);
+        String jsonString = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(jsonString);
+
+        log.info("webSocket 已经向前端发送数据!!");
+
     }
 
-    @Override
+
+
+        @Override
     public PageResult getHistoryOrdersPage(Integer page,Integer pageSize, Integer status) {
         PageResult pageResult = new PageResult();
 
@@ -544,5 +564,15 @@ public class OrderServiceImpl implements OrderService {
         od.setDeliveryTime(LocalDateTime.now());
 
         ordersMapper.updateStatusDelivery(od);
+    }
+
+    /**
+     * 通过订单号 直接将订单状态改成 已付款
+     */
+    @Override
+    public void updateStatusByNumber(OrdersPaymentDTO ordersPaymentDTO) {
+        ordersMapper.updateStatusByNumberToBeConfirmed(ordersPaymentDTO);
+
+
     }
 }
