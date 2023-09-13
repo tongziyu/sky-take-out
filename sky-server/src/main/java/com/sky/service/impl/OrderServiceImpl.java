@@ -5,9 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
+import com.sky.dto.*;
 import com.sky.entity.*;
 import com.sky.exception.OrderBusinessException;
 import com.sky.mapper.*;
@@ -92,8 +90,7 @@ public class OrderServiceImpl implements OrderService {
         // 判断地址信息是否有效
         AddressBook addressBook = addressBookMapper.getById(ordersSubmitDTO.getAddressBookId());
 
-        if (addressBook == null
-        ){
+        if (addressBook == null){
             throw new OrderBusinessException(MessageConstant.ADDRESS_BOOK_IS_NULL);
         }
 
@@ -116,6 +113,9 @@ public class OrderServiceImpl implements OrderService {
         orders.setUserId(BaseContext.getCurrentId());
 
         orders.setConsignee(addressBook.getConsignee());
+
+        orders.setAddress(addressBook.getDetail());
+
 
         log.info("需要插入到orders表中的数据:{}",orders);
 
@@ -458,5 +458,91 @@ public class OrderServiceImpl implements OrderService {
         orderStatisticsVO.setDeliveryInProgress(deliveryInProgress);
 
         return orderStatisticsVO;
+    }
+
+    /**
+     * 修改订单状态为已经接单
+     */
+    @Override
+    public void updateStatusById(OrdersConfirmDTO ordersConfirmDTO) {
+
+        ordersMapper.updateStatusById(ordersConfirmDTO);
+    }
+
+
+    /**
+     * 修改订单状态为拒绝,并添加拒绝原因
+     */
+    @Override
+    public void updateStatusRejectById(OrdersRejectionDTO ordersRejectionDTO) {
+        // 判断业务异常
+        Orders orders1 = ordersMapper.selectOrderById(ordersRejectionDTO.getId());
+
+        if (orders1 == null || orders1.getStatus() == Orders.TO_BE_CONFIRMED){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+
+
+        Orders orders = new Orders();
+        orders.setId(ordersRejectionDTO.getId());
+        orders.setRejectionReason(ordersRejectionDTO.getRejectionReason());
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelTime(LocalDateTime.now());
+        ordersMapper.updateStatusRejectById(orders);
+    }
+
+    /**
+     * 取消订单
+     * @param ordersCancelDTO
+     */
+    @Override
+    public void updateStatusCancel(OrdersCancelDTO ordersCancelDTO) {
+        Orders orders = new Orders();
+        orders.setId(ordersCancelDTO.getId());
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelReason(ordersCancelDTO.getCancelReason());
+        orders.setCancelTime(LocalDateTime.now());
+
+        ordersMapper.updateStatusCancelById(orders);
+
+    }
+
+    /**
+     * 修改状态为递送
+     * @param id
+     */
+    @Override
+    public void updateStatusDelivery(Long id) {
+        Orders orders = ordersMapper.selectOrderById(id);
+
+        if (orders == null || !orders.getStatus().equals(Orders.CONFIRMED)){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        Orders od = new Orders();
+        od.setId(orders.getId());
+        // 更新订单状态,状态转为派送中
+        od.setStatus(Orders.DELIVERY_IN_PROGRESS);
+
+        ordersMapper.updateStatusDelivery(od);
+    }
+
+    /**
+     * 修改订单状态为完成
+     * @param id
+     */
+    @Override
+    public void updateStatusComplete(Long id) {
+        Orders orders = ordersMapper.selectOrderById(id);
+
+        if (orders == null || !orders.getStatus().equals(Orders.DELIVERY_IN_PROGRESS)){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        Orders od = new Orders();
+        od.setId(orders.getId());
+        // 更新订单状态,状态为已完成
+        od.setStatus(Orders.COMPLETED);
+        od.setDeliveryTime(LocalDateTime.now());
+
+        ordersMapper.updateStatusDelivery(od);
     }
 }

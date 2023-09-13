@@ -74,6 +74,7 @@
             <if test="cancelTime != null">
                 cancel_time = #{cancelTime},
             </if>
+
         </set>
         where
             id = #{id}
@@ -98,7 +99,27 @@
                 order_time between #{beginTime} and #{endTime}
             </if>
         </where>
-
+        order by
+            order_time desc
     </select>
+
+    <update id="updateStatusRejectById">
+        update
+        orders
+        <set>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="rejectionReason != null">
+                rejection_reason = #{rejectionReason},
+            </if>
+            <if test="cancelTime != null">
+                cancel_time = #{cancelTime},
+            </if>
+
+        </set>
+        where
+        id = #{id}
+    </update>
 
 </mapper>

@@ -1,9 +1,6 @@
 package com.sky.service;
 
-import com.sky.dto.OrdersPageQueryDTO;
-import com.sky.dto.OrdersPaymentDTO;
-import com.sky.dto.OrdersSubmitDTO;
-import com.sky.entity.Orders;
+import com.sky.dto.*;
 import com.sky.result.PageResult;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderStatisticsVO;
@@ -54,4 +51,25 @@ public interface OrderService {
     PageResult conditionSearch(OrdersPageQueryDTO ordersPageQueryDTO);
 
     OrderStatisticsVO getStatistics();
+
+
+    /**
+     * 修改订单状态为已经接单
+     */
+    void updateStatusById(OrdersConfirmDTO ordersConfirmDTO);
+
+    /**
+     * 修改订单状态为拒绝,并添加拒绝原因
+     */
+    void updateStatusRejectById(OrdersRejectionDTO ordersRejectionDTO);
+
+    /**
+     * 取消订单
+     * @param ordersCancelDTO
+     */
+    void updateStatusCancel(OrdersCancelDTO ordersCancelDTO);
+
+    void updateStatusDelivery(Long id);
+
+    void updateStatusComplete(Long id);
 }

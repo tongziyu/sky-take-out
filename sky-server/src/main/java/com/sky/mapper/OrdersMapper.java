@@ -1,5 +1,6 @@
 package com.sky.mapper;
 
+import com.sky.dto.OrdersConfirmDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.Orders;
 import com.sky.vo.OrderVO;
@@ -58,4 +59,12 @@ public interface OrdersMapper {
 
     @Select("select count(status) from orders where status = #{status}")
     Integer selectCountByStatus(Integer status);
+
+    @Update("update orders set status = #{status} where id = #{id}")
+    void updateStatusById(OrdersConfirmDTO ordersConfirmDTO);
+
+    void updateStatusRejectById(Orders orders);
+
+    @Update("update orders set status = #{status} where id = #{id}")
+    void updateStatusDelivery(Orders od);
 }
