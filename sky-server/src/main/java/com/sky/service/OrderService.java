@@ -99,4 +99,11 @@ public interface OrderService {
      */
     UserReportVO getUserStatistics(LocalDate begin, LocalDate end);
 
+    /**
+     * 订单统计
+     * @param begin
+     * @param end
+     * @return
+     */
+    OrderReportVO ordersStatistics(LocalDate begin, LocalDate end);
 }

@@ -83,4 +83,6 @@ public interface OrdersMapper {
     void updateStatusByNumberToBeConfirmed(OrdersPaymentDTO ordersPaymentDTO);
 
     Double sumByMap(Map map);
+
+    Integer selectOrderCountByMap(Map map);
 }

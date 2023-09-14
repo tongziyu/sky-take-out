@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.print.attribute.standard.MediaName;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -692,5 +693,69 @@ public class OrderServiceImpl implements OrderService {
 
 
         return userReportVO;
+    }
+
+
+    /**
+     * 订单统计
+     * @param begin
+     * @param end
+     * @return
+     */
+    @Override
+    public OrderReportVO ordersStatistics(LocalDate begin, LocalDate end) {
+        OrderReportVO orderReportVO = new OrderReportVO();
+
+        // 查询所有的订单数量
+        Map map = new HashMap();
+        Integer allOrderCount = ordersMapper.selectOrderCountByMap(map);
+
+        // 查询有效订单数量
+        map.put("status",Orders.COMPLETED);
+        Integer completedOrderCount = ordersMapper.selectOrderCountByMap(map);
+
+        // 计算订单完成率
+        Double rate = completedOrderCount*1.0 / allOrderCount*1.0 ;
+
+        // 封装日期
+        LocalDate localDateBegin = begin;
+        List<LocalDate> localDates = new ArrayList<>();
+        localDates.add(localDateBegin);
+
+        while (!localDateBegin.equals(end)){
+            localDateBegin = localDateBegin.plusDays(1);
+            localDates.add(localDateBegin);
+        }
+
+        List todayOrderCount = new ArrayList();
+
+        List todayCompletedOrderCount = new ArrayList();
+        // 根据日期查询当天所有的订单数量
+        for (LocalDate localDate:localDates){
+            Map map2 = new HashMap();
+            LocalDateTime localDateTimeBegin = LocalDateTime.of(localDate,LocalTime.MIN);
+            LocalDateTime localDateTimeEnd = LocalDateTime.of(localDate,LocalTime.MAX);
+
+            map2.put("begin",localDateTimeBegin);
+            map2.put("end",localDateTimeEnd);
+
+            Integer todayCount = ordersMapper.selectOrderCountByMap(map2);
+            todayOrderCount.add(todayCount);
+            // 根据日期查询当天所有的有效订单数量
+            map2.put("status",Orders.COMPLETED);
+
+            Integer todayCompletedCount = ordersMapper.selectOrderCountByMap(map2);
+            todayCompletedOrderCount.add(todayCompletedCount);
+
+        }
+
+        OrderReportVO orderReportVO1 = new OrderReportVO();
+        orderReportVO1.setDateList(StringUtils.join(localDates,","));
+        orderReportVO1.setTotalOrderCount(allOrderCount);
+        orderReportVO1.setValidOrderCount(completedOrderCount);
+        orderReportVO1.setOrderCountList(StringUtils.join(todayOrderCount,","));
+        orderReportVO1.setValidOrderCountList(StringUtils.join(todayCompletedOrderCount,","));
+        orderReportVO1.setOrderCompletionRate(rate);
+        return orderReportVO1;
     }
 }
