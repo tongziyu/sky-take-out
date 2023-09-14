@@ -748,7 +748,7 @@ public class OrderServiceImpl implements OrderService {
             todayCompletedOrderCount.add(todayCompletedCount);
 
         }
-
+        // 封装数据
         OrderReportVO orderReportVO1 = new OrderReportVO();
         orderReportVO1.setDateList(StringUtils.join(localDates,","));
         orderReportVO1.setTotalOrderCount(allOrderCount);
@@ -757,5 +757,32 @@ public class OrderServiceImpl implements OrderService {
         orderReportVO1.setValidOrderCountList(StringUtils.join(todayCompletedOrderCount,","));
         orderReportVO1.setOrderCompletionRate(rate);
         return orderReportVO1;
+    }
+
+
+    /**
+     * 查询指定时间区间内的销量前十
+     * @param begin
+     * @param end
+     * @return
+     */
+    @Override
+    public SalesTop10ReportVO top10(LocalDate begin, LocalDate end) {
+        LocalDateTime localDateTimeBegin = LocalDateTime.of(begin,LocalTime.MIN);
+        LocalDateTime localDateTimeEnd = LocalDateTime.of(end,LocalTime.MAX);
+
+        List<GoodsSalesDTO> salesTop10ReportVOS = orderDetailMapper.selectSalesTop10(begin, end);
+
+        List<String> nameList = salesTop10ReportVOS.stream().map(GoodsSalesDTO::getName).collect(Collectors.toList());
+        String nameListResult = StringUtils.join(nameList, ",");
+
+        List<Integer> numberList = salesTop10ReportVOS.stream().map(GoodsSalesDTO::getNumber).collect(Collectors.toList());
+        String numberListResult = StringUtils.join(numberList, ",");
+
+        return SalesTop10ReportVO
+                .builder()
+                .nameList(nameListResult)
+                .numberList(numberListResult)
+                .build();
     }
 }

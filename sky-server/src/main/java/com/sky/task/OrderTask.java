@@ -26,7 +26,7 @@ public class OrderTask {
     /**
      * 每分钟去查一遍数据库,将未付款切超过15分钟的订单取消
      */
-    @Scheduled(cron = "0 0/1 * * * ? ")
+    @Scheduled(cron = "0 */1 * * * ?")
     //@Scheduled(cron = "0/5 * * * * ? ")
     public void updatePayTimeOutOrder(){
         log.info("付款超时任务执行!!! time:{}",LocalDateTime.now());
@@ -46,7 +46,7 @@ public class OrderTask {
     /**
      * 处理昨天的派送订单
      */
-    @Scheduled(cron = "* * 1 * * ?")
+    @Scheduled(cron = "0 0 1 * * ?")
     //@Scheduled(cron = "1/5 * * * * ? ")
     public void updateProcessDeliveryOrder(){
         log.info("派送超时任务执行!!! time:{}",LocalDateTime.now());
