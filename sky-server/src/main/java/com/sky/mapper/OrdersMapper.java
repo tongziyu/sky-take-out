@@ -12,6 +12,7 @@ import org.apache.ibatis.annotations.Update;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface OrdersMapper {
@@ -80,4 +81,6 @@ public interface OrdersMapper {
      */
     @Update("update orders set status = 2 where number = #{orderNumber}")
     void updateStatusByNumberToBeConfirmed(OrdersPaymentDTO ordersPaymentDTO);
+
+    Double sumByMap(Map map);
 }

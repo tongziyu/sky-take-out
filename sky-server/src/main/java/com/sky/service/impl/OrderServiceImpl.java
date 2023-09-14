@@ -13,12 +13,10 @@ import com.sky.mapper.*;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.utils.WeChatPayUtil;
-import com.sky.vo.OrderPaymentVO;
-import com.sky.vo.OrderStatisticsVO;
-import com.sky.vo.OrderSubmitVO;
-import com.sky.vo.OrderVO;
+import com.sky.vo.*;
 import com.sky.websocket.WebSocketServer;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.ini4j.spi.BeanTool;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +26,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -204,15 +204,19 @@ public class OrderServiceImpl implements OrderService {
         Orders ordersDB = ordersMapper.getByNumber(outTradeNo);
 
         // 根据订单id更新订单的状态、支付方式、支付状态、结账时间
-        //Orders orders = Orders.builder()
-        //        .id(ordersDB.getId())
-        //        .status(Orders.TO_BE_CONFIRMED)
-        //        .payStatus(Orders.PAID)
-        //        .checkoutTime(LocalDateTime.now())
-        //        .build();
-        //
-        //ordersMapper.update(orders);
+        Orders orders = Orders.builder()
+                .id(ordersDB.getId())
+                .status(Orders.TO_BE_CONFIRMED)
+                .payStatus(Orders.PAID)
+                .checkoutTime(LocalDateTime.now())
+                .build();
 
+        ordersMapper.update(orders);
+    }
+
+    public void sendWsComeOrder(String outTradeNo){
+
+        Orders ordersDB = ordersMapper.getByNumber(outTradeNo);
 
         Map map = new HashMap();
         map.put("type",1);
@@ -222,7 +226,6 @@ public class OrderServiceImpl implements OrderService {
         webSocketServer.sendToAllClient(jsonString);
 
         log.info("webSocket 已经向前端发送数据!!");
-
     }
 
 
@@ -572,7 +575,71 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void updateStatusByNumber(OrdersPaymentDTO ordersPaymentDTO) {
         ordersMapper.updateStatusByNumberToBeConfirmed(ordersPaymentDTO);
+    }
+
+    /**
+     * 催单
+     * @param id
+     */
+    @Override
+    public void reminder(Long id) {
+        Orders orders = ordersMapper.selectOrderById(id);
+        Map map = new HashMap();
+        map.put("type",2);
+        map.put("orderId",orders.getId());
+        map.put("content","订单号:" + orders.getNumber());
+        String jsonString = JSON.toJSONString(map);
+        webSocketServer.sendToAllClient(jsonString);
+    }
+
+    /**
+     * 统计营业额
+     * @param begin
+     * @param end
+     * @return
+     */
+    @Override
+    public TurnoverReportVO getTurnoverStatistics(LocalDate begin, LocalDate end) {
+        // 拼接日期
+        LocalDate beginDate = begin;
+        List<LocalDate> localDates = new ArrayList<>();
+
+        localDates.add(beginDate);
+        // 计算开始时间到结束时间中间的日子,并放进list
+        while (!beginDate.equals(end)){
+
+            beginDate = beginDate.plusDays(1);
+            localDates.add(beginDate);
+        }
+
+        List<Double> sumList = new ArrayList<>();
+        // 根据日期,查询出来当天的营业额
+        for (LocalDate localDate : localDates){
+            // 生成查询当天的日期信息, 2023-02-11:00:00
+            LocalDateTime localDateTimeBegin = LocalDateTime.of(localDate,LocalTime.MIN);
+            // 生成当前的结束时刻   2023-02-11 23:59:59
+            LocalDateTime localDateTimeEnd = LocalDateTime.of(localDate,LocalTime.MAX);
+
+            Map map = new HashMap();
+            map.put("begin",localDateTimeBegin);
+            map.put("end",localDateTimeEnd);
+            map.put("status",Orders.COMPLETED);
+
+            Double sum = ordersMapper.sumByMap(map);
+
+            sum = sum == null?0.0:sum;
+            sumList.add(sum);
+
+        }
 
 
+        TurnoverReportVO  turnoverReportVO = new TurnoverReportVO();
+
+        //将列表转化为字符串,拼接使用 ,
+        turnoverReportVO.setDateList(StringUtils.join(localDates,","));
+
+        turnoverReportVO.setTurnoverList(StringUtils.join(sumList,","));
+
+        return turnoverReportVO;
     }
 }

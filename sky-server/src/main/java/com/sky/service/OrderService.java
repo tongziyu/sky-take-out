@@ -2,11 +2,9 @@ package com.sky.service;
 
 import com.sky.dto.*;
 import com.sky.result.PageResult;
-import com.sky.vo.OrderPaymentVO;
-import com.sky.vo.OrderStatisticsVO;
-import com.sky.vo.OrderSubmitVO;
-import com.sky.vo.OrderVO;
+import com.sky.vo.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface OrderService {
@@ -76,4 +74,10 @@ public interface OrderService {
      * 通过订单号 直接将订单状态改成 已付款
      */
     void updateStatusByNumber(OrdersPaymentDTO ordersPaymentDTO);
+
+    void sendWsComeOrder(String outTradeNo);
+
+    void reminder(Long id);
+
+    TurnoverReportVO getTurnoverStatistics(LocalDate begin, LocalDate end);
 }

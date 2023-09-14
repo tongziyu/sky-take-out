@@ -59,10 +59,12 @@ public class OrderController {
         orderService.updateStatusByNumber(ordersPaymentDTO);
 
         //直接调用支付成功的回调方法,假设已经支付成功了
-        orderService.paySuccess(ordersPaymentDTO.getOrderNumber());
+        // orderService.paySuccess(ordersPaymentDTO.getOrderNumber());
+        orderService.sendWsComeOrder(ordersPaymentDTO.getOrderNumber());
 
         return Result.success(orderPaymentVO);
     }
+
 
 
     @GetMapping("/historyOrders")
@@ -94,6 +96,13 @@ public class OrderController {
     @ApiOperation("再来一单")
     public Result repetitionOrder(@PathVariable("id") Long id){
         orderService.repetitionOrder(id);
+        return Result.success();
+    }
+
+    @GetMapping("reminder/{id}")
+    @ApiOperation("催单")
+    public Result reminder(@PathVariable("id") Long id){
+        orderService.reminder(id);
         return Result.success();
     }
 
