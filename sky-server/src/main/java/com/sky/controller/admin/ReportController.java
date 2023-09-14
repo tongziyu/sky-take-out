@@ -3,9 +3,11 @@ package com.sky.controller.admin;
 import com.sky.result.Result;
 import com.sky.service.OrderService;
 import com.sky.vo.TurnoverReportVO;
+import com.sky.vo.UserReportVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,6 +41,17 @@ public class ReportController {
         TurnoverReportVO turnoverReportVO = orderService.getTurnoverStatistics(begin,end);
 
         return Result.success(turnoverReportVO);
+    }
+
+    @GetMapping("/userStatistics")
+    @ApiOperation("用户统计")
+    public Result<UserReportVO> userStatistics(
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate begin,
+            @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate end
+    ){
+        UserReportVO userReportVO = orderService.getUserStatistics(begin,end);
+
+        return Result.success(userReportVO);
     }
 
 }

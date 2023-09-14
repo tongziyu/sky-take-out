@@ -642,4 +642,55 @@ public class OrderServiceImpl implements OrderService {
 
         return turnoverReportVO;
     }
+
+    /**
+     * 用户统计
+     * @param begin
+     * @param end
+     * @return
+     */
+    @Override
+    public UserReportVO getUserStatistics(LocalDate begin, LocalDate end) {
+
+        // 计算日期
+        LocalDate localDateBegin = begin;
+
+        List<LocalDate> localDates = new ArrayList<>();
+
+        localDates.add(localDateBegin);
+
+        while(!localDateBegin.equals(end)){
+            localDateBegin = localDateBegin.plusDays(1);
+
+            localDates.add(localDateBegin);
+        }
+
+        List newUserList = new ArrayList();
+
+        List totalUserList = new ArrayList();
+
+        for (LocalDate localDate : localDates){
+            LocalDateTime localDateTimeBegin = LocalDateTime.of(localDate,LocalTime.MIN);
+            LocalDateTime localDateTimeEnd = LocalDateTime.of(localDate,LocalTime.MAX);
+
+            // 查询当天新创建的用户 create_time > 当天00:00 && create_time < 当天23:59:59
+            Integer newCount = userMapper.selectNewUserCountByCreateTime(localDateTimeBegin, localDateTimeEnd);
+            newUserList.add(newCount);
+
+            // 查询当天的全部用户数量  create_time < 当天
+            Integer allCount = userMapper.selectBeforeUserCountByCreateTime(localDateTimeEnd);
+            totalUserList.add(allCount);
+        }
+        // 封装数据 返回给controller
+        UserReportVO userReportVO = new UserReportVO();
+
+        userReportVO.setNewUserList(StringUtils.join(newUserList,","));
+
+        userReportVO.setTotalUserList(StringUtils.join(totalUserList,","));
+
+        userReportVO.setDateList(StringUtils.join(localDates,","));
+
+
+        return userReportVO;
+    }
 }

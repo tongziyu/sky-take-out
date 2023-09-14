@@ -77,7 +77,26 @@ public interface OrderService {
 
     void sendWsComeOrder(String outTradeNo);
 
+    /**
+     * 催单
+     * @param id
+     */
     void reminder(Long id);
 
+    /**
+     * 统计营业额
+     * @param begin
+     * @param end
+     * @return
+     */
     TurnoverReportVO getTurnoverStatistics(LocalDate begin, LocalDate end);
+
+    /**
+     * 用户统计
+     * @param begin
+     * @param end
+     * @return
+     */
+    UserReportVO getUserStatistics(LocalDate begin, LocalDate end);
+
 }
