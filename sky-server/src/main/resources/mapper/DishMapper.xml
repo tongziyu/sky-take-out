@@ -3,10 +3,6 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.sky.mapper.DishMapper">
-    <sql id="column">
-        id,name,category_id,price,image
-    </sql>
-
 
     <insert id="insert" parameterType="dish" useGeneratedKeys="true" keyProperty="id">
         insert into dish(name,category_id,price,image,description,status,create_time,create_user,update_time,update_user)
@@ -94,5 +90,15 @@
         where
             id = #{id}
     </update>
-
+    <select id="countByMap" resultType="java.lang.Integer">
+        select count(id) from dish
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="categoryId != null">
+                and category_id = #{categoryId}
+            </if>
+        </where>
+    </select>
 </mapper>
